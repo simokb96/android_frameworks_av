@@ -24,7 +24,6 @@
 #include <binder/Parcel.h>
 #include <utils/String8.h>
 #include <media/stagefright/foundation/ADebug.h>
-#include <media/stagefright/MediaErrors.h>
 
 namespace android {
 
@@ -107,18 +106,11 @@ struct BpMediaHTTPConnection : public BpInterface<IMediaHTTPConnection> {
             return UNKNOWN_ERROR;
         }
 
-        size_t len = reply.readInt32();
+        int32_t len = reply.readInt32();
 
-        if (len > size) {
-            ALOGE("requested %zu, got %zu", size, len);
-            return ERROR_OUT_OF_RANGE;
+        if (len > 0) {
+            memcpy(buffer, mMemory->pointer(), len);
         }
-        if (len > mMemory->size()) {
-            ALOGE("got %zu, but memory has %zu", len, mMemory->size());
-            return ERROR_OUT_OF_RANGE;
-        }
-
-        memcpy(buffer, mMemory->pointer(), len);
 
         return len;
     }

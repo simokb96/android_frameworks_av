@@ -575,18 +575,16 @@ int  NsCreate(preproc_effect_t *effect)
     return 0;
 }
 
-int NsGetParameter(preproc_effect_t  *effect __unused,
-                   void              *pParam __unused,
-                   uint32_t          *pValueSize __unused,
-                   void              *pValue __unused)
+int NsGetParameter(preproc_effect_t  *effect,
+                   void              *pParam,
+                   uint32_t          *pValueSize,
+                   void              *pValue)
 {
     int status = 0;
     return status;
 }
 
-int NsSetParameter (preproc_effect_t *effect __unused,
-                    void *pParam __unused,
-                    void *pValue __unused)
+int NsSetParameter (preproc_effect_t *effect, void *pParam, void *pValue)
 {
     int status = 0;
     return status;
@@ -1436,17 +1434,16 @@ int PreProcessingFx_Command(effect_handle_t  self,
             }
             break;
 
-        case EFFECT_CMD_GET_PARAM: {
-            effect_param_t *p = (effect_param_t *)pCmdData;
-
-            if (pCmdData == NULL || cmdSize < sizeof(effect_param_t) ||
-                    cmdSize < (sizeof(effect_param_t) + p->psize) ||
-                    pReplyData == NULL || replySize == NULL ||
-                    *replySize < (sizeof(effect_param_t) + p->psize)){
+        case EFFECT_CMD_GET_PARAM:{
+            if (pCmdData == NULL ||
+                    cmdSize < (int)sizeof(effect_param_t) ||
+                    pReplyData == NULL ||
+                    *replySize < (int)sizeof(effect_param_t)){
                 ALOGV("PreProcessingFx_Command cmdCode Case: "
                         "EFFECT_CMD_GET_PARAM: ERROR");
                 return -EINVAL;
             }
+            effect_param_t *p = (effect_param_t *)pCmdData;
 
             memcpy(pReplyData, pCmdData, sizeof(effect_param_t) + p->psize);
 
@@ -1464,8 +1461,8 @@ int PreProcessingFx_Command(effect_handle_t  self,
 
         case EFFECT_CMD_SET_PARAM:{
             if (pCmdData == NULL||
-                    cmdSize < sizeof(effect_param_t) ||
-                    pReplyData == NULL || replySize == NULL ||
+                    cmdSize < (int)sizeof(effect_param_t) ||
+                    pReplyData == NULL ||
                     *replySize != sizeof(int32_t)){
                 ALOGV("PreProcessingFx_Command cmdCode Case: "
                         "EFFECT_CMD_SET_PARAM: ERROR");
@@ -1486,7 +1483,7 @@ int PreProcessingFx_Command(effect_handle_t  self,
         } break;
 
         case EFFECT_CMD_ENABLE:
-            if (pReplyData == NULL || replySize == NULL || *replySize != sizeof(int)){
+            if (pReplyData == NULL || *replySize != sizeof(int)){
                 ALOGV("PreProcessingFx_Command cmdCode Case: EFFECT_CMD_ENABLE: ERROR");
                 return -EINVAL;
             }
@@ -1494,7 +1491,7 @@ int PreProcessingFx_Command(effect_handle_t  self,
             break;
 
         case EFFECT_CMD_DISABLE:
-            if (pReplyData == NULL || replySize == NULL || *replySize != sizeof(int)){
+            if (pReplyData == NULL || *replySize != sizeof(int)){
                 ALOGV("PreProcessingFx_Command cmdCode Case: EFFECT_CMD_DISABLE: ERROR");
                 return -EINVAL;
             }
@@ -1714,7 +1711,7 @@ int PreProcessingFx_GetDescriptor(effect_handle_t   self,
 
 int PreProcessingFx_ProcessReverse(effect_handle_t     self,
                                    audio_buffer_t    *inBuffer,
-                                   audio_buffer_t    *outBuffer __unused)
+                                   audio_buffer_t    *outBuffer)
 {
     preproc_effect_t * effect = (preproc_effect_t *)self;
     int    status = 0;
