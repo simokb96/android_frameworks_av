@@ -1,0 +1,23 @@
+--- media/libstagefright/Android.mk
++++ media/libstagefright/Android.mk
+@@ -224,7 +224,7 @@
+         libstagefright_foundation \
+         libdl
+ 
+-LOCAL_CFLAGS += -Wno-multichar -Wno-unused-parameter
++LOCAL_CFLAGS += -Wno-multichar
+ 
+ ifeq ($(DTS_CODEC_M_), true)
+   LOCAL_SRC_FILES+= DTSUtils.cpp
+@@ -260,11 +260,6 @@
+ LOCAL_CFLAGS += -DUSE_SEIREN_AUDIO
+ endif
+ 
+-ifeq ($(TARGET_BOARD_PLATFORM),msm7x27a)
+-LOCAL_CFLAGS += -DUSE_SUBMIT_ONE_INPUT_BUFFER
+-LOCAL_CFLAGS += -DNO_METADATA_IN_VIDEO_BUFFERS
+-endif
+-
+ LOCAL_MODULE:= libstagefright
+ 
+ LOCAL_MODULE_TAGS := optional

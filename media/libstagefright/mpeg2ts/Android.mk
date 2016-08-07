@@ -12,7 +12,7 @@ LOCAL_SRC_FILES:=                 \
 LOCAL_C_INCLUDES:= \
         $(TOP)/frameworks/av/media/libstagefright \
         $(TOP)/frameworks/native/include/media/openmax \
-        $(TOP)/hardware/qcom/media/mm-core/inc/
+        $(TOP)/hardware/qcom/media/mm-core/inc \
 
 LOCAL_CFLAGS += -Werror
 

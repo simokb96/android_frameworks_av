@@ -552,15 +552,11 @@ status_t ACodec::allocateBuffersOnPort(OMX_U32 portIndex) {
 
     status_t err;
     if (mNativeWindow != NULL && portIndex == kPortIndexOutput) {
-#ifdef NO_METADATA_IN_VIDEO_BUFFERS
-        err = allocateOutputBuffersFromNativeWindow();
-#else
         if (mStoreMetaDataInOutputBuffers) {
             err = allocateOutputMetaDataBuffers();
         } else {
             err = allocateOutputBuffersFromNativeWindow();
         }
-#endif
     } else {
         OMX_PARAM_PORTDEFINITIONTYPE def;
         InitOMXParams(&def);
@@ -656,15 +652,15 @@ status_t ACodec::configureOutputBuffersFromNativeWindow(
         return err;
     }
 
-#if defined(USE_SAMSUNG_COLORFORMAT) || defined(QCOM_LEGACY_OMX)
+#ifdef USE_SAMSUNG_COLORFORMAT
     OMX_COLOR_FORMATTYPE eNativeColorFormat = def.format.video.eColorFormat;
     setNativeWindowColorFormat(eNativeColorFormat);
 
     err = native_window_set_buffers_geometry(
-        mNativeWindow.get(),
-        def.format.video.nFrameWidth,
-        def.format.video.nFrameHeight,
-        eNativeColorFormat);
+    mNativeWindow.get(),
+    def.format.video.nFrameWidth,
+    def.format.video.nFrameHeight,
+    eNativeColorFormat);
 #elif defined(MTK_HARDWARE)
     err = native_window_set_buffers_geometry(
             mNativeWindow.get(),
@@ -957,7 +953,7 @@ status_t ACodec::submitOutputMetaDataBuffer() {
     return OK;
 }
 
-#if defined(USE_SAMSUNG_COLORFORMAT)
+#ifdef USE_SAMSUNG_COLORFORMAT
 void ACodec::setNativeWindowColorFormat(OMX_COLOR_FORMATTYPE &eNativeColorFormat)
 {
     // In case of Samsung decoders, we set proper native color format for the Native Window
@@ -973,14 +969,6 @@ void ACodec::setNativeWindowColorFormat(OMX_COLOR_FORMATTYPE &eNativeColorFormat
                 eNativeColorFormat = (OMX_COLOR_FORMATTYPE)HAL_PIXEL_FORMAT_YCbCr_420_P;
                 break;
         }
-    }
-}
-#elif defined(QCOM_LEGACY_OMX)
-void ACodec::setNativeWindowColorFormat(OMX_COLOR_FORMATTYPE &eNativeColorFormat)
-{
-    if (!strncmp(mComponentName.c_str(), "OMX.qcom.", 9)) {
-        if (eNativeColorFormat == OMX_QCOM_COLOR_FormatYVU420SemiPlanar)
-            eNativeColorFormat = (OMX_COLOR_FORMATTYPE)HAL_PIXEL_FORMAT_YCrCb_420_SP;
     }
 }
 #endif

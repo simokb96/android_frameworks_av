@@ -67,6 +67,10 @@ LOCAL_SRC_FILES:=                         \
         ExtendedStats.cpp                 \
         APE.cpp                           \
         FFMPEGSoftCodec.cpp               \
+        ExtendedMediaDefs.cpp             \
+        ExtendedWriter.cpp                \
+        FMA2DPWriter.cpp                  \
+
 
 LOCAL_C_INCLUDES:= \
         $(TOP)/frameworks/av/include/media/ \
@@ -81,6 +85,8 @@ LOCAL_C_INCLUDES:= \
         $(TOP)/external/icu/icu4c/source/common \
         $(TOP)/external/icu/icu4c/source/i18n \
         $(TOP)/external/jpeg \
+        $(TOP)/hardware/qcom/media/mm-core/inc \
+        $(TOP)/frameworks/av/media/libstagefright/include
 
 LOCAL_SHARED_LIBRARIES := \
         libbinder \
@@ -109,7 +115,7 @@ LOCAL_SHARED_LIBRARIES := \
         libjpeg \
 
 ifeq ($(BOARD_USES_QCOM_HARDWARE),true)
-ifneq ($(filter msm7x27a msm7x30 msm8660 msm8960,$(TARGET_BOARD_PLATFORM)),)
+ifneq ($(filter msm7x30 msm8660 msm8960,$(TARGET_BOARD_PLATFORM)),)
 ifeq ($(BOARD_USES_LEGACY_ALSA_AUDIO),true)
    ifeq ($(USE_TUNNEL_MODE),true)
         LOCAL_CFLAGS += -DUSE_TUNNEL_MODE
@@ -152,23 +158,14 @@ LOCAL_STATIC_LIBRARIES := \
 ifeq ($(call is-vendor-board-platform,QCOM),true)
 
 ifeq ($(TARGET_USES_QCOM_BSP), true)
-    LOCAL_C_INCLUDES += $(TOP)/hardware/qcom/display/libgralloc
+    LOCAL_C_INCLUDES += $(call project-path-for,qcom-display)/libgralloc
 endif
 
-ifeq ($(TARGET_ENABLE_QC_AV_ENHANCEMENTS),true)
-       LOCAL_CFLAGS     += -DENABLE_AV_ENHANCEMENTS
-       LOCAL_C_INCLUDES += $(TOP)/hardware/qcom/media/mm-core/inc
-       LOCAL_C_INCLUDES += $(TOP)/frameworks/av/media/libstagefright/include
-       LOCAL_SRC_FILES  += ExtendedMediaDefs.cpp
-       LOCAL_SRC_FILES  += ExtendedWriter.cpp
-       LOCAL_SRC_FILES  += FMA2DPWriter.cpp
-endif #TARGET_ENABLE_AV_ENHANCEMENTS
-
-endif
 ifeq ($(strip $(AUDIO_FEATURE_ENABLED_FLAC_OFFLOAD)),true)
        LOCAL_CFLAGS     += -DFLAC_OFFLOAD_ENABLED
 endif
 
+endif
 
 ifeq ($(BOARD_USE_S3D_SUPPORT), true)
 ifeq ($(BOARD_USES_HWC_SERVICES), true)
@@ -198,7 +195,7 @@ LOCAL_SHARED_LIBRARIES += \
         libstagefright_foundation \
         libdl
 
-LOCAL_CFLAGS += -Wno-multichar -Wno-unused-parameter
+LOCAL_CFLAGS += -Wno-multichar
 
 ifeq ($(BOARD_USE_SAMSUNG_COLORFORMAT), true)
 LOCAL_CFLAGS += -DUSE_SAMSUNG_COLORFORMAT
@@ -211,8 +208,8 @@ LOCAL_C_INCLUDES += \
 endif
 
 ifeq ($(TARGET_BOARD_PLATFORM),msm7x27a)
-LOCAL_CFLAGS += -DUSE_SUBMIT_ONE_INPUT_BUFFER
-LOCAL_CFLAGS += -DNO_METADATA_IN_VIDEO_BUFFERS
+    LOCAL_CFLAGS += -DUSE_SUBMIT_ONE_INPUT_BUFFER
+    LOCAL_CFLAGS += -DNO_METADATA_IN_VIDEO_BUFFERS
 endif
 
 LOCAL_MODULE:= libstagefright

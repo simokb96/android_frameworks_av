@@ -245,7 +245,7 @@ private:
     status_t submitOutputMetaDataBuffer();
     void signalSubmitOutputMetaDataBufferIfEOS_workaround();
     status_t allocateOutputBuffersFromNativeWindow();
-#if defined(USE_SAMSUNG_COLORFORMAT) || defined(QCOM_LEGACY_OMX)
+#ifdef USE_SAMSUNG_COLORFORMAT
     void setNativeWindowColorFormat(OMX_COLOR_FORMATTYPE &eNativeColorFormat);
 #endif
     status_t cancelBufferToNativeWindow(BufferInfo *info);

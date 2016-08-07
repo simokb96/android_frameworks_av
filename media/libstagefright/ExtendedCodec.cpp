@@ -46,7 +46,7 @@
 
 #define ARG_TOUCH(x) (void)x
 
-#if defined(ENABLE_AV_ENHANCEMENTS) || defined(QCOM_LEGACY_MMPARSER)
+#ifdef ENABLE_AV_ENHANCEMENTS
 #include <QCMetaData.h>
 #include <QCMediaDefs.h>
 #include <OMX_QCOMExtns.h>
